@@ -1,13 +1,21 @@
 
 import * as THREE from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { 
     App, GpsReceivedEvent
  } from 'locar';
+
+
+const loader = new OBJLoader();
+
+const url = import.meta.env.BASE_URL + 'Assets/ironman.obj';
 
 const app = new App({ 
     cameraOptions: { hFov: 80, near: 0.001, far: 1000 },
     canvas: document.getElementById('glscene') as HTMLCanvasElement,
 });
+
+
 
 try {
     let firstLocation = true;
@@ -20,38 +28,29 @@ try {
         if(firstLocation) {
             alert(`Got the initial location: longitude ${ev.position.coords.longitude}, latitude ${ev.position.coords.latitude}`);
 
-            const boxProps = [{
-                latDis: 0.0005,
-                lonDis: 0,
-                colour: 0xff0000
-            }, {
-                latDis: -0.0005,
-                lonDis: 0,
-                colour: 0xffff00
-            }, {
-                latDis: 0,
-                lonDis: -0.0005,
-                colour: 0x00ffff
-            }, {
-                latDis: 0,
-                lonDis: 0.0005,
-                colour: 0x00ff00
-            }];
+            
+			const loader = new OBJLoader();
+			const url = import.meta.env.BASE_URL + 'Assets/ironman.obj';
 
-            const geom = new THREE.BoxGeometry(10,10,10);
+			loader.load(
+			  url,
+			  (object) => {
+				object.scale.set(0.01, 0.01, 0.01); // waarschijnlijk nodig
+				object.position.set(0, 0, 0);
 
-            for(const boxProp of boxProps) {
-                const mesh = new THREE.Mesh(
-                    geom, 
-                    new THREE.MeshBasicMaterial({color: boxProp.colour})
-                );
+				// 👉 voeg toe aan LocAR op GPS positie
+				locar.add(
+				  object,
+				  ev.position.coords.longitude + 0.0002, // beetje offset
+				  ev.position.coords.latitude
+				);
+			  },
+			  undefined,
+			  (error) => {
+				console.error("Error loading OBJ:", error);
+			  }
+			);
 
-                locar.add(
-                    mesh, 
-                    ev.position.coords.longitude + boxProp.lonDis, 
-                    ev.position.coords.latitude + boxProp.latDis
-                );
-            }
         
             firstLocation = false;
         }
