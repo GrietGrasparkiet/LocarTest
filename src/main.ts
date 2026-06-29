@@ -1,12 +1,10 @@
-
 import * as THREE from 'three';
 import { 
     App, GpsReceivedEvent
  } from 'locar';
 
 const app = new App({ 
-    cameraOptions: { hFov: 80, near: 0.001, far: 1000 },
-    canvas: document.getElementById('glscene') as HTMLCanvasElement,
+    cameraOptions: { hFov: 80, near: 0.001, far: 1000 }
 });
 
 try {
@@ -55,15 +53,6 @@ try {
         
             firstLocation = false;
         }
-    });
-
-     document.getElementById("setFakeLoc")!.addEventListener("click", e => {
-        alert("Using fake input GPS, not real GPS location");
-        locar.stopGps();
-        locar.fakeGps(
-            parseFloat((document.getElementById("fakeLon") as HTMLInputElement).value),
-            parseFloat((document.getElementById("fakeLat") as HTMLInputElement).value)
-        );
     });
 
     locar.startGps();
