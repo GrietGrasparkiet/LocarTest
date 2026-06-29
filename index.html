@@ -2,15 +2,23 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-<style>
-html, body {
-	width: 100%;
-	height: 100%;
-}
-</style>
-<title>LocAR.js example 1</title>
-<script type='module' src='src/main.ts'></script>
+<title>LocAR.js example 2</title>
+  <script type="module" crossorigin src="/locar.js/assets/02-gps-and-sensors-D0Jg497Q.js"></script>
+  <link rel="modulepreload" crossorigin href="/locar.js/assets/modulepreload-polyfill-Dezn_h7o.js">
+  <link rel="modulepreload" crossorigin href="/locar.js/assets/locar.es-CBjoH0Np.js">
+  <link rel="stylesheet" crossorigin href="/locar.js/assets/style-DaqTeUSk.css">
 </head>
 <body>
+<main>
+
+<div id="gpsinput">
+<div><input id="fakeLat" placeholder="Fake Lat" /></div>
+<div><input id="fakeLon" placeholder="Fake Lon"/></div>
+<div><button id="setFakeLoc">Set Fake Location!</button></div>
+</div>
+
+<canvas id="glscene"></canvas>
+
+</main>
 </body>
 </html>
