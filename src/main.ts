@@ -35,7 +35,7 @@ try {
 			loader.load(
 			  url,
 			  (object) => {
-				object.scale.set(0.01, 0.01, 0.01); // waarschijnlijk nodig
+				object.scale.set(1, 1, 1); // waarschijnlijk nodig
 				object.position.set(0, 0, 0);
 
 				// 👉 voeg toe aan LocAR op GPS positie
