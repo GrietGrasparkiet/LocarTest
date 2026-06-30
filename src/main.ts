@@ -5,11 +5,6 @@ import {
     App, GpsReceivedEvent
  } from 'locar';
 
-
-const loader = new OBJLoader();
-
-const url = import.meta.env.BASE_URL + 'Assets/ironman.obj';
-
 const app = new App({ 
     cameraOptions: { hFov: 80, near: 0.001, far: 1000 },
     canvas: document.getElementById('glscene') as HTMLCanvasElement,
@@ -32,24 +27,39 @@ try {
 			const loader = new OBJLoader();
 			const url = import.meta.env.BASE_URL + 'Assets/ironman.obj';
 
-			loader.load(
-			  url,
-			  (object) => {
-				object.scale.set(1, 1, 1); // waarschijnlijk nodig
-				object.position.set(0, 0, 0);
 
-				// 👉 voeg toe aan LocAR op GPS positie
-				locar.add(
-				  object,
-				  ev.position.coords.longitude + 0.0002, // beetje offset
-				  ev.position.coords.latitude
-				);
-			  },
-			  undefined,
-			  (error) => {
-				console.error("Error loading OBJ:", error);
-			  }
-			);
+loader.load(
+  url,
+  (object) => {
+
+    // Fix material
+    object.traverse((child: any) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshStandardMaterial({
+          color: 0xffffff
+        });
+      }
+    });
+
+    // Scale fix
+    object.scale.set(0.01, 0.01, 0.01);
+
+    // Keep origin-centered
+    object.position.set(0, 0, 0);
+
+    // Add to GPS location
+    locar.add(
+      object,
+      ev.position.coords.longitude + 0.0005,
+      ev.position.coords.latitude
+    );
+  },
+  undefined,
+  (error) => {
+    console.error("Error loading OBJ:", error);
+  }
+);
+
 
         
             firstLocation = false;
