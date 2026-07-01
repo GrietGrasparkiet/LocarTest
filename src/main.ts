@@ -16,7 +16,7 @@ const app = new App({
 try {
     let firstLocation = true;
     const locar = await app.start();
-    locar.on("gpserror", (error : GeolocationPositionError) => {
+    locar.on("gpserror", (error : GeolocationPositionError) =>{ 
         alert(`GPS error: ${error.code}`);
     });
 
@@ -33,7 +33,7 @@ try {
 				scene.add( gltf.scene );
 			}, undefined, function ( error ) {
 				console.error( error )
-			});
+			}
 
       // Scale fix
     object.scale.set(0.01, 0.01, 0.01);
