@@ -1,66 +1,57 @@
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import { App, GpsReceivedEvent } from 'locar';
 
-// Create app
-const app = new App({
-  cameraOptions: { hFov: 80, near: 0.001, far: 1000 },
-  canvas: document.getElementById('glscene') as HTMLCanvasElement,
-});
+// ✅ Scene
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xdddddd);
 
-try {
-  let firstLocation = true;
+// ✅ Camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.z = 5;
 
-  const locar = await app.start();
+// ✅ Renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-  // Catch GPS errors
-  locar.on("gpserror", (error: GeolocationPositionError) => {
-    alert(`GPS error: ${error.code}`);
-  });
+// ✅ Light (important or model may appear black)
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(5, 10, 7);
+scene.add(light);
 
-  // When GPS updates
-  locar.on("gpsupdate", (ev: GpsReceivedEvent) => {
-    if (!firstLocation) return;
+const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambient);
 
-    firstLocation = false;
+// ✅ Load OBJ
+const loader = new OBJLoader();
 
-    const loader = new OBJLoader();
+const url = 'Assets/ironman.obj'; // adjust path if needed
 
-    // ✅ Correct path to OBJ file
-    const url = import.meta.env.BASE_URL + 'Assets/ironman.obj';
+loader.load(
+  url,
 
-    loader.load(
-      url,
-      (object) => {
-        // ✅ Scale model (OBJ files are often huge)
-        object.scale.set(0.01, 0.01, 0.01);
+  // ✅ On load
+  (object) => {
+    console.log("✅ OBJ loaded");
 
-        // ✅ Optional: adjust height so it stands on ground
-        object.position.set(0, 0, 0);
+    // scale model
+    object.scale.set(0.5, 0.5, 0.5);
 
-        // ✅ Add model to GPS location
-        locar.add(
-          object,
-          ev.position.coords.longitude,
-          ev.position.coords.latitude
-        );
+    // optional: fix orientation
+    object.rotation.x = -Math.PI / 2;
 
-        console.log("Model placed at GPS location");
-      },
-      undefined,
-      (error) => {
-        console.error("Error loading OBJ:", error);
-      }
-    );
+    scene.add(object);
+  },
 
-    alert(
-      `GPS locked:\nLat: ${ev.position.coords.latitude}\nLon: ${ev.position.coords.longitude}`
-    );
-  });
+  // ✅ Progress
+  (xhr) => {
+    console.log(`Loading: ${(xhr.loaded / xhr.total * 100).toFixed(0)}%`);
+  },
 
-  // ✅ Start GPS tracking
-  locar.startGps();
-
-} catch (e: any) {
-  alert(`${e.code} ${e.message}`);
-}
+  // ✅ Error
+  (error) => {
