@@ -1,6 +1,7 @@
 
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { 
     App, GpsReceivedEvent
  } from 'locar';
@@ -24,24 +25,17 @@ try {
             alert(`Got the initial location: longitude ${ev.position.coords.longitude}, latitude ${ev.position.coords.latitude}`);
 
             
-			const loader = new OBJLoader();
+			const loader = new GLTFLoader();
 			const url = import.meta.env.BASE_URL + 'Assets/ironman.obj';
 
 
-loader.load(
-  url,
-  (object) => {
+			loader.load(url, function ( gltf ){
+				scene.add( gltf.scene );
+			}, undefined, function ( error ) {
+				console.error( error )
+			});
 
-    // Fix material
-    object.traverse((child: any) => {
-      if (child.isMesh) {
-        child.material = new THREE.MeshStandardMaterial({
-          color: 0xffffff
-        });
-      }
-    });
-
-    // Scale fix
+      // Scale fix
     object.scale.set(0.01, 0.01, 0.01);
 
     // Keep origin-centered
