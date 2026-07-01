@@ -21,44 +21,34 @@ try {
     });
 
     locar.on("gpsupdate", (ev: GpsReceivedEvent) => {
-        if(firstLocation) {
-            alert(`Got the initial location: longitude ${ev.position.coords.longitude}, latitude ${ev.position.coords.latitude}`);
+  		if (firstLocation) {
+    		const loader = new GLTFLoader();
+    		const url = import.meta.env.BASE_URL + 'Assets/ironman.glb';
+	
+    		loader.load(
+      			url,
+      			(gltf) => {
+        			const object = gltf.scene;
 
-            
-			const loader = new GLTFLoader();
-			const url = import.meta.env.BASE_URL + 'Assets/ironman.obj';
+        			object.scale.set(0.01, 0.01, 0.01);
+			        object.position.set(0, 0, 0);
 
+        			locar.add(
+          				object,
+          				ev.position.coords.longitude + 0.0005,
+          				ev.position.coords.latitude
+        			);
+      			},
+      			undefined,
+      			(error) => {
+        			console.error("Error loading model:", error);
+      			}
+    		);
 
-			loader.load(url, function ( gltf ){
-				scene.add( gltf.scene );
-			}, undefined, function ( error ) {
-				console.error( error )
-			}
+    		firstLocation = false;
+  		}
+	});
 
-      // Scale fix
-    object.scale.set(0.01, 0.01, 0.01);
-
-    // Keep origin-centered
-    object.position.set(0, 0, 0);
-
-    // Add to GPS location
-    locar.add(
-      object,
-      ev.position.coords.longitude + 0.0005,
-      ev.position.coords.latitude
-    );
-  },
-  undefined,
-  (error) => {
-    console.error("Error loading OBJ:", error);
-  }
-);
-
-
-        
-            firstLocation = false;
-        }
-    });
 
      document.getElementById("setFakeLoc")!.addEventListener("click", e => {
         alert("Using fake input GPS, not real GPS location");
